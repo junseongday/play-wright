@@ -19,7 +19,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test --reporter=dot,blob | tee dot-report.txt
+      run: npx playwright test --reporter=dot,blob --workers=4 | tee dot-report.txt
     - name: Extract test summary with total count
       run: |
         PASSED=$(grep -Eo '[0-9]+ passed' dot-report.txt | grep -Eo '[0-9]+' || echo 0)
