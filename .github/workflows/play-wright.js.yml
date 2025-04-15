@@ -23,7 +23,7 @@ jobs:
     - name: Send Teams notification
       run: |
         DOT_SUMMARY=$(tail -n 20 dot-report.txt) # 또는 grep 사용해서 결과 줄만 추출
-        echo(DOT_SUMMARY)
+        echo $DOT_SUMMARY
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
