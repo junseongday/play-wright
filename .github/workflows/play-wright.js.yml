@@ -20,10 +20,22 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test --reporter=dot,blob | tee dot-report.txt
-    - name: Send Teams notification
+    - name: Extract test summary with total count
       run: |
-        DOT_SUMMARY=$(tail -n 20 dot-report.txt) # 또는 grep 사용해서 결과 줄만 추출
-        echo $DOT_SUMMARY
+        PASSED=$(grep -Eo '[0-9]+ passed' dot-report.txt | grep -Eo '[0-9]+' || echo 0)
+        FAILED=$(grep -Eo '[0-9]+ failed' dot-report.txt | grep -Eo '[0-9]+' || echo 0)
+        SKIPPED=$(grep -Eo '[0-9]+ skipped' dot-report.txt | grep -Eo '[0-9]+' || echo 0)
+
+        TOTAL=$((PASSED + FAILED + SKIPPED))
+
+        echo "✅ Passed:  $PASSED"
+        echo "❌ Failed:  $FAILED"
+        echo "⏭️ Skipped: $SKIPPED"
+        echo "📊 Total:   $TOTAL"
+
+        # Optional: export as environment variable if needed later
+        echo "TEST_SUMMARY=Passed:$PASSED Failed:$FAILED Skipped:$SKIPPED Total:$TOTAL" >> $GITHUB_ENV
+
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
